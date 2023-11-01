@@ -53,6 +53,3 @@ for (i in seq_along(sd_vector)){
 plot(sdcvmat[,1]~sdcvmat[,2])
 # abline(lm(sdcvmat[,1]~sdcvmat[,2]), col = "red")
 abline(a = 0, b = 1, col = "blue", lwd = 3)
-
-
-fdsanfooidsunfioqw <- 1243243
