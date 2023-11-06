@@ -94,13 +94,16 @@ lines(predy~newx)
 
 ##Optional exercise##
 
-
 sd_vector <- seq(0, 1, length.out = 1000)
+x <- rnorm(200, 0, 1)
+slopes <- numeric(length(sd_vector))
+intercepts <- numeric(length(sd_vector))
+
 for (i in seq_along(sd_vector)) {
-  x <- rnorm(200, 0, sd_vector[i])
-  y <- x * 0.4
-  m <- lm(y~x)
-  m$coefficients[2]
-  
-  
+  newx <- x + rnorm(200, 0, sd_vector[i])
+  m <- lm(y~newx)
+  slopes[i] <- m$coefficients[2]
+  intercepts[i] <- m$coefficients[1]
 }
+
+plot(slopes~sd_vector)
