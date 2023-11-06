@@ -1,5 +1,5 @@
 ##First day BIOS14
-##Simulating data from distributions####
+###Simulating data from distributions####
 
 x = rnorm(n=1000000, mean=5, sd=1)
 mean(x)
