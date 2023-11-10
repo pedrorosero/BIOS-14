@@ -70,15 +70,80 @@ confint(m) #confindence interval of m
 ####Two-way ANOVA####
 ##Load dataset##
 
-dat <- read.csv("butterflies.csv", sep = ";") #dataset
+dat <- read.csv("butterflies.csv", sep = ";",stringsAsFactors=T) #dataset
 #We add a letter to maternal and larval to merge them but knowing if they are maternal
 #Or larval host. We thus create 4 groups in total
-dat$MaternalHost <-  paste0(dat$MaternalHost, "M") #Add a letter to maternal
+dat$MaternalHost <-  paste0(datt$MaternalHost, "M") #Add a letter to maternal
 dat$LarvalHost <-  paste0(dat$LarvalHost, "L") #Add letter to Larval
 means <-  tapply(dat$DevelopmentTime, list(dat$MaternalHost, dat$LarvalHost), mean)
 means
 
+##Plot of devlopmental time (days)##
+{
+par(pty = "s", xpd = T)
+plot(means[1,], type = "b", ylim = c(min(means)-1, max(means)+1),
+     ylab = "Devlopmental time (days)", las = 1, xlab = "Larval Host",
+     xaxt = "n", xlim = c(0.75,2.25), cex.lab = 1.5)
+segments(x0 = 1, x1 = 1, y0 = min(means)-1.5, y1 = min(means)-1.75)
+segments(x0 = 2, x1 = 2, y0 = min(means)-1.5, y1 = min(means)-1.75)
+text(1, min(means)-2.5, "Barbarea", cex = 1.1)
+text(2, min(means)-2.5, "Berteroa", cex = 1.1)
+lines(means[2,], type = "b", lty = 2, pch = 16)
 
+legend("topleft", pch = c(1, 16), legend = c("Barbarea", "Berteroa"),
+       title  = "Maternal host", bty = "n", 
+       inset = 0.1)
+}
 
+devtm <- lm(dat$DevelopmentTime~dat$LarvalHost*dat$MaternalHost)
+summary(devtm)
+par(mfrow = c(2,2))
+plot(devtm)
+par(mfrow = c(1,1))
+hist(dat$DevelopmentTime) ##Not normally distributed, looks horrible
 
+##Plot of adult weight (g)##
+meansAW <- tapply(dat$AdultWeight, list(dat$MaternalHost, dat$LarvalHost), mean)
+{
+  par(pty = "s", xpd = T)
+  plot(meansAW[1,], type = "b", ylim = c(min(meansAW)-1, max(meansAW)+1),
+       ylab = "Adult Weight (g)", las = 1, xlab = "Larval Host",
+       xaxt = "n", xlim = c(0.75,2.25), cex.lab = 1.5)
+  segments(x0 = 1, x1 = 1, y0 = min(meansAW)-2.5, y1 = min(meansAW)-1.75)
+  segments(x0 = 2, x1 = 2, y0 = min(meansAW)-2.5, y1 = min(meansAW)-1.75)
+  text(1, min(meansAW)-3.5, "Barbarea", cex = 1.1)
+  text(2, min(meansAW)-3.5, "Berteroa", cex = 1.1)
+  lines(meansAW[2,], type = "b", lty = 2, pch = 16)
+  legend("topright", pch = c(1, 16), legend = c("Barbarea", "Berteroa"),
+         title  = "Maternal host", bty = "n", 
+         inset = 0.1)
+}
+AWm <- lm(dat$AdultWeight~dat$LarvalHost*dat$MaternalHost)
+summary(AWm)
+par(mfrow = c(2,2))
+plot(AWm)
+par(mfrow = c(1,1))
+hist(dat$AdultWeight)
 
+##Plot of growth date g.day-1)##
+meansGR <- tapply(dat$GrowthRate, list(dat$MaternalHost, dat$LarvalHost), mean)
+
+{
+  par(pty = "s", xpd = T)
+  plot(meansGR[1,], type = "b", ylim = c(min(meansGR), max(meansGR)),
+       ylab = expression("Growth rate (g.days"^-1~")"), las = 1, xlab = "Larval Host",
+       xaxt = "n", xlim = c(0.75,2.25), cex.lab = 1.5)
+  segments(x0 = 1, x1 = 1, y0 = min(meansGR)-0.0025, y1 = min(meansGR)-0.0012)
+  segments(x0 = 2, x1 = 2, y0 = min(meansGR)-0.0025, y1 = min(meansGR)-0.0012)
+  text(1, min(meansGR)-0.004, "Barbarea", cex = 1.1)
+  text(2, min(meansGR)-0.004, "Berteroa", cex = 1.1)
+  lines(meansGR[2,], type = "b", lty = 2, pch = 16)
+
+  legend("bottomleft", pch = c(1, 16), legend = c("Barbarea", "Berteroa"),
+         title  = "Maternal host", bty = "n", 
+         inset = 0.1)
+}
+devGRm <- lm(dat$GrowthRate~dat$LarvalHost*dat$MaternalHost)
+summary(devGRm)
+
+# plot(dat$DevelopmentTime~dat$LarvalHost*dat$MaternalHost)
