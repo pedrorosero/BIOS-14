@@ -120,6 +120,7 @@ meansAW <- tapply(dat$AdultWeight, list(dat$MaternalHost, dat$LarvalHost), mean)
 }
 AWm <- lm(dat$AdultWeight~dat$LarvalHost*dat$MaternalHost)
 summary(AWm)
+anova(AWm)
 par(mfrow = c(2,2))
 plot(AWm)
 par(mfrow = c(1,1))
@@ -145,5 +146,6 @@ meansGR <- tapply(dat$GrowthRate, list(dat$MaternalHost, dat$LarvalHost), mean)
 }
 devGRm <- lm(dat$GrowthRate~dat$LarvalHost*dat$MaternalHost)
 summary(devGRm)
+devGRanova <- anova(devGRm)
 
 # plot(dat$DevelopmentTime~dat$LarvalHost*dat$MaternalHost)
