@@ -97,6 +97,7 @@ legend("topleft", pch = c(1, 16), legend = c("Barbarea", "Berteroa"),
 
 devtm <- lm(dat$DevelopmentTime~dat$LarvalHost*dat$MaternalHost)
 summary(devtm)
+anova(devtm)
 par(mfrow = c(2,2))
 plot(devtm)
 par(mfrow = c(1,1))
