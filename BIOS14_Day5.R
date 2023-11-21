@@ -21,7 +21,7 @@ hist(x, las = 1) ##From the hist we can see that the values of x are not normall
 hist(logit_x, las = 1) ##but if we check the logit hist then it would seem that we approach something better
 
 xx <-  seq(-5, 5, 0.01)
-plot(xx, inv_logit(xx), type="l", las=1,
+plot(xx, invlogit(xx), type="l", las=1,
      xlab="Logit (x)",
      ylab="P") ##In this case we have a sigmoid function as higher values of x will make the denominator t
 #to be closer and closer to being equal to 1 (converging but never reaching it) meaning that we will slowly approache
