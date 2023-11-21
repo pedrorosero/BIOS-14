@@ -77,43 +77,87 @@ summary(m)
 
 
 ###Real dataset --> report exercise####
-
 dat <-  read.csv("Eulaema.csv")
 head(dat)
-
+par(pty = "s")
 ##Checking our data first##
-plot(dat$Eulaema_nigrita) #we have shitloads of overdispersion
-
-
-m <- glm.nb(Eulaema_nigrita~MAP+forest.+Tseason, data = dat)
+plot(dat$Eulaema_nigrita, xaxt = "n", xlab = "", 
+     ylab = expression(italic("E. nigrita")~"Abundance")) #we have shitloads of overdispersion
+m <- glm(Eulaema_nigrita~MAP+forest.+Pseason, data = dat, family = "poisson")
 summary(m)
-1- m$deviance/m$null.deviance
+
+m <- glm.nb(Eulaema_nigrita~MAP+forest.+Pseason, data = dat)
+summary(m)
+1- m$deviance/m$null.deviance #pseudo Rsquared
 # plot(dat)
 #the altitude and temperature are correlated (makes sense)
 #MAT and Tseason also kinda 
 
+par(mfrow = c(2,2))
+
 ##Plotting the values of Eulaema_nigrita
-plot(dat$Eulaema_nigrita~dat$forest., pch = 16, col = "black", 
+plot(dat$Eulaema_nigrita~dat$forest., pch = 1, col = "grey", 
      xlab = "Forest cover (proportion)", 
      ylab = expression(italic("E. nigrita")~"Abundance"),
      las = 1)
-plot(dat$forest., dat$Eulaema_nigrita, col="grey", las=1,
-     xlab="Forest cover",
-     ylab="El. nigrita abundance")
+
 
 newforest <-  seq(min(dat$forest.), max(dat$forest.), length.out=200)
 newMAP <-  rep(mean(dat$MAP), length(newforest))
 newTseason <- rep(mean(dat$Tseason), length(newforest))
 newPseason <- rep(mean(dat$Pseason), length(newforest))
-y_hat <-  predict(m, newdata=list(MAP = newMAP, Tseason = newTseason,
+y_hat <-  predict(m, newdata=list(MAP = newMAP, Pseason = newPseason,
                                 forest.=newforest),
                 type="response", se.fit = T)
-lines(newforest, y_hat$fit,lwd=2)
+lines(newforest, y_hat$fit,lwd=3, col = "red")
 
 polygon(c(newforest, rev(newforest)),
         c(y_hat$fit+1.96*y_hat$se.fit,
           rev(y_hat$fit-1.96*y_hat$se.fit)),
-        col = rgb(0,1,1,.5), border = FALSE)
+        col = rgb(1,0.25,0,0.25), border = FALSE)
+
+##Mean annual precipitation##
+plot(dat$Eulaema_nigrita~dat$MAP, pch = 1, col = "grey", 
+     xlab = "Mean Annual Precipitation (mm)", 
+     ylab = expression(italic("E. nigrita")~"Abundance"),
+     las = 1)
+
+
+newMAP <-  seq(min(dat$MAP), max(dat$MAP), length.out = 200)
+newforest <-  rep(mean(dat$forest.), length(newMAP))
+newTseason <- rep(mean(dat$Tseason), length(newforest))
+newPseason <- rep(mean(dat$Pseason), length(newforest))
+y_hat <-  predict(m, newdata=list(MAP = newMAP, Pseason = newPseason,
+                                  forest.=newforest),
+                  type="response", se.fit = T)
+lines(newMAP, y_hat$fit,lwd=3, col = "blue")
+
+polygon(c(newMAP, rev(newMAP)),
+        c(y_hat$fit+1.96*y_hat$se.fit,
+          rev(y_hat$fit-1.96*y_hat$se.fit)),
+        col = rgb(0.68,0.84,0.9,0.5), border = FALSE)
+
+##seasonal precipitation##
+plot(dat$Eulaema_nigrita~dat$Pseason, pch = 1, col = "grey", 
+     xlab = "Precipitation seasonality (%)", 
+     ylab = expression(italic("E. nigrita")~"Abundance"),
+     las = 1)
+
+newPseason <- seq(min(dat$Pseason), max(dat$Pseason), length.out = 200)
+newMAP <-  rep(mean(dat$MAP), length(newPseason))
+newforest <-  rep(mean(dat$forest.), length(newMAP))
+newTseason <- rep(mean(dat$Tseason), length(newforest))
+y_hat <-  predict(m, newdata=list(MAP = newMAP, Pseason = newPseason,
+                                  forest.=newforest),
+                  type="response", se.fit = T)
+lines(newPseason, y_hat$fit,lwd=3, col = "green")
+
+polygon(c(newPseason, rev(newPseason)),
+        c(y_hat$fit+1.96*y_hat$se.fit,
+          rev(y_hat$fit-1.96*y_hat$se.fit)),
+        col = rgb(0.56,0.93,0.56,0.5), border = FALSE)
+
+
 ##Hurdle model####
 #two separate analysis where the first analysis part 
 #takes all the zeros and the other counts given where at least 1 was observed
